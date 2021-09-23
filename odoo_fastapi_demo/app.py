@@ -2,12 +2,15 @@
 
 from typing import Optional, List
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Depends, HTTPException
 from starlette.status import HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from pydantic import BaseModel
 
 import odoo
+from odoo.api import Environment
+from odoo.models import Model
 
+from .deps import odoo_env
 
 app = FastAPI(title="FastAPI with Odoo Demo")
 
@@ -25,17 +28,19 @@ class Partner(BaseModel):
     email: Optional[str]
     is_company: bool = False
 
+    @classmethod
+    def from_res_partner(cls, p: Model) -> "Partner":
+        return Partner(id=p.id, name=p.name, email=p.email, is_company=p.is_company)
+
 
 tom = Partner(id=1, name="Tom", email="tom@wb.com")
 
 
 @app.get("/partners", response_model=List[Partner])
-def partners():
-    return [
-        tom,
-        Partner(id=2, name="Jerry", email="jerry@wb.com"),
-        dict(id=3, name="Warner Bros", email="info@wb.com", is_company=True),
-    ]
+def partners(env: Environment = Depends(odoo_env)):
+    partners = env["res.partner"].search([])
+    return [Partner.from_res_partner(p) for p in partners]
+
 
 
 @app.get("/partners/{partner_id}", response_model=Partner)
