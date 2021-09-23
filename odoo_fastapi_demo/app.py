@@ -3,12 +3,13 @@
 from typing import Optional, List
 
 from fastapi import FastAPI, Depends, HTTPException
-from starlette.status import HTTP_201_CREATED, HTTP_404_NOT_FOUND
+from starlette.status import HTTP_201_CREATED, HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 from pydantic import BaseModel
 
 import odoo
 from odoo.api import Environment
 from odoo.models import Model
+from odoo.exceptions import AccessError, MissingError
 
 from .deps import odoo_env
 
@@ -45,8 +46,13 @@ def partners(is_company: Optional[bool] = None, env: Environment = Depends(odoo_
 
 @app.get("/partners/{partner_id}", response_model=Partner)
 def get_partner(partner_id: int, env: Environment = Depends(odoo_env)):
-    partner = env["res.partner"].browse(partner_id)
-    return Partner.from_res_partner(partner)
+    try:
+        partner = env["res.partner"].browse(partner_id)
+        return Partner.from_res_partner(partner)
+    except MissingError:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND)
+    except AccessError:
+        raise HTTPException(status_code=HTTP_403_FORBIDDEN)
 
 
 @app.post("/partners", response_model=Partner, status_code=HTTP_201_CREATED)
