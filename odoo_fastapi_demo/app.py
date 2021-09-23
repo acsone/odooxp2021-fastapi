@@ -33,9 +33,6 @@ class Partner(BaseModel):
         return Partner(id=p.id, name=p.name, email=p.email, is_company=p.is_company)
 
 
-tom = Partner(id=1, name="Tom", email="tom@wb.com")
-
-
 @app.get("/partners", response_model=List[Partner])
 def partners(is_company: Optional[bool] = None, env: Environment = Depends(odoo_env)):
     domain = []
@@ -47,10 +44,9 @@ def partners(is_company: Optional[bool] = None, env: Environment = Depends(odoo_
 
 
 @app.get("/partners/{partner_id}", response_model=Partner)
-def get_partner(partner_id: int):
-    if partner_id == 1:
-        return tom
-    raise HTTPException(status_code=HTTP_404_NOT_FOUND)
+def get_partner(partner_id: int, env: Environment = Depends(odoo_env)):
+    partner = env["res.partner"].browse(partner_id)
+    return Partner.from_res_partner(partner)
 
 
 @app.post("/partners", response_model=Partner, status_code=HTTP_201_CREATED)
