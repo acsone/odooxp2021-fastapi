@@ -1,0 +1,2 @@
+-r https://raw.githubusercontent.com/odoo/odoo/15.0/requirements.txt
+-e git+https://github.com/odoo/odoo@15.0#egg=odoo
