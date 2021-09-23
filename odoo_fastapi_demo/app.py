@@ -56,5 +56,12 @@ def get_partner(partner_id: int, env: Environment = Depends(odoo_env)):
 
 
 @app.post("/partners", response_model=Partner, status_code=HTTP_201_CREATED)
-def create_partner(partner: Partner):
-    return partner
+def create_partner(partner: Partner, env: Environment = Depends(odoo_env)):
+    partner = env["res.partner"].create(
+        {
+            "name": partner.name,
+            "email": partner.email,
+            "is_company": partner.is_company,
+        }
+    )
+    return Partner.from_res_partner(partner)
