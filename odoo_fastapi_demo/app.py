@@ -6,7 +6,17 @@ from fastapi import FastAPI, HTTPException
 from starlette.status import HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from pydantic import BaseModel
 
-app = FastAPI(title="FastAPI Demo")
+import odoo
+
+
+app = FastAPI(title="FastAPI with Odoo Demo")
+
+
+@app.on_event("startup")
+def initialize_odoo() -> None:
+    # Read Odoo config from $ODOO_RC.
+    odoo.tools.config.parse_config([])
+
 
 
 class Partner(BaseModel):
