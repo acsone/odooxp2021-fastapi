@@ -37,8 +37,11 @@ tom = Partner(id=1, name="Tom", email="tom@wb.com")
 
 
 @app.get("/partners", response_model=List[Partner])
-def partners(env: Environment = Depends(odoo_env)):
-    partners = env["res.partner"].search([])
+def partners(is_company: Optional[bool] = None, env: Environment = Depends(odoo_env)):
+    domain = []
+    if is_company is not None:
+        domain.append(("is_company", "=", is_company))
+    partners = env["res.partner"].search(domain)
     return [Partner.from_res_partner(p) for p in partners]
 
 
