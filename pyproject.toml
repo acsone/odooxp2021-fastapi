@@ -8,3 +8,4 @@ authors = [{name = "St\u00e9phane Bidoul", email = "stephane.bidoul@acsone.eu"}]
 classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
 dependencies = ["fastapi", "uvicorn[standard]", "gunicorn", "odoo"]
+optional-dependencies = {test = ["pytest"]}
