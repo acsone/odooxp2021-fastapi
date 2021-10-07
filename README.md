@@ -1,6 +1,6 @@
 # FastAPI with Odoo backend demo
 
-This repository accompanies Stéphane Bidoul's Odoo Experience 2021 Talk.
+This repository accompanies Stéphane Bidoul's [Odoo Experience 2021 Talk](https://youtu.be/tFpezjMGdNc).
 
 The first ~10 commits follow the talk structure and build the demo from the ground up.
 
